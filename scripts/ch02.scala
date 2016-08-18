@@ -13,7 +13,9 @@ def parse(line: String): MatchData = {
 
 object StatUtils extends Serializable {
 	implicit class Stat(rdd: RDD[Array[Double]]) extends Serializable {
-		def arrstats = rdd.map(_.map(NAStatCounter(_))).mapPartitions(iter => Iterator(iter.reduce(_.zip(_).map{case (a,b) => a.merge(b)}))).reduce(_.zip(_).map{case (a,b) => a.merge(b)})
+		def arrstats = (rdd.map(_.map(NAStatCounter(_)))
+						   .mapPartitions(iter => Iterator(iter.reduce(_.zip(_).map{case (a,b) => a.merge(b)})))
+						   .reduce(_.zip(_).map{case (a,b) => a.merge(b)}))
 	}
 }
 
