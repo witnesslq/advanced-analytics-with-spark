@@ -33,5 +33,7 @@ artistById.filter(artist => listend.contains(artist._1)).map(_._2).collect.toSet
 val recommends = model.recommendProducts(user, num)
 println("the recommends is:")
 recommends.foreach(println)
-recommends.map(_.product).map(artistById(_)).foreach(println)
+val recArtist = recommends.map(_.product).toSet
+
+artistById.filter(artist => recArtist.contains(artist._1)).map(_._2).collect.toSet.foreach(println)
 
