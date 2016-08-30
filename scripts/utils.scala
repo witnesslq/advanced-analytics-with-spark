@@ -1,20 +1,24 @@
-def some[T](exp: => T) = 
-    try {Some(exp)} catch {case e:Exception => None}
+:load scripts/NAStatCounter.scala
+import org.apache.spark.rdd.RDD
 
-object StringUtils extends Serializable {
-    implicit class util(s: String) extends Serializable {
-    	def trimInt  = Integer.parseInt(s.trim)
-	}   
-}
+def some[T](exp: => T) =
+	try { Some(exp) } catch { case e:Exception => None }
 
-object ArrayUtils extends Serializable {
-    implicit class Util(arr: Array[String]) extends Serializable {
-        def toInt  = arr.map(_.trim.toInt)
-		def toDouble = arr.map(_.trim.toDouble)
+object StatUtils extends Serializable {
+    implicit class Stat(rdd: RDD[Array[Double]]) extends Serializable {
+	        def arrstats = (rdd.map(_.map(NAStatCounter(_)))
+	                           .mapPartitions(iter => Iterator(iter.reduce(_.zip(_).map{case (a,b) => a.merge(b)})))
+                               .reduce(_.zip(_).map{case (a,b) => a.merge(b)}))
     }
 }
 
+object ArrayUtils extends Serializable {
+    implicit class Utils(arr: Array[String]) extends Serializable {
+		def toInt = arr.map(_.toInt)
+        def toDouble = arr.map(_.toDouble)
+    }
+}
 
-import StringUtils._
+import StatUtils._
 import ArrayUtils._
 
