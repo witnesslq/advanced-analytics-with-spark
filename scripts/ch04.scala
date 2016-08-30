@@ -2,6 +2,7 @@
 import org.apache.spark.mllib.linalg._
 import org.apache.spark.mllib.regression._
 
+<<<<<<< HEAD
 val rawData = sc.textFile("data/covtype.data")
 
 val data = (rawData.map(_.split(",").toDouble)
@@ -9,6 +10,10 @@ val data = (rawData.map(_.split(",").toDouble)
 
 val Array(trainData,cvData,testData) = 
 		data.randomSplit(Array(0.8,0.1,0.1))
+
+trainData.cache
+cvData.cache
+testData.cache
 
 import org.apache.spark.mllib.evaluation._
 import org.apache.spark.mllib.tree._
@@ -27,5 +32,4 @@ val metrics = getMetrics(model, cvData)
 
 metrics.confusionMatrix
 println("precision is: " + metrics.precision)
-
 

@@ -1,5 +1,4 @@
-:load scripts/NAStatCounter.scala
-import org.apache.spark.rdd.RDD
+:load scripts/utils.scala
 
 case class MatchData(id1: Int, id2: Int, scores: Array[Double], matched: Boolean)
 
@@ -11,22 +10,11 @@ def parse(line: String): MatchData = {
 			  matched = values(11).toBoolean)
 }
 
-object StatUtils extends Serializable {
-	implicit class Stat(rdd: RDD[Array[Double]]) extends Serializable {
-		def arrstats = (rdd.map(_.map(NAStatCounter(_)))
-						   .mapPartitions(iter => Iterator(iter.reduce(_.zip(_).map{case (a,b) => a.merge(b)})))
-						   .reduce(_.zip(_).map{case (a,b) => a.merge(b)}))
-	}
-}
-
-import StatUtils._
-
 val text = sc.textFile("data/linkage/")
 
 val parsed = text.filter(!_.startsWith("\"id_1\"")).map(parse)
 
-// val stats = parsed.map(_.scores).map(_.map(NAStatCounter(_))).mapPartitions(iter => Iterator(iter.reduce(_.zip(_).map{case (a,b) => a.merge(b)}))).reduce(_.zip(_).map{case (a,b) => a.merge(b)})
-
+// val stats = parsed.map(_.scores).arrstats
 // stats.foreach(println)
 
 val statsm = parsed.filter(_.matched).map(_.scores).arrstats
