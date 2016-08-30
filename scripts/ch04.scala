@@ -2,7 +2,6 @@
 import org.apache.spark.mllib.linalg._
 import org.apache.spark.mllib.regression._
 
-<<<<<<< HEAD
 val rawData = sc.textFile("data/covtype.data")
 
 val data = (rawData.map(_.split(",").toDouble)
