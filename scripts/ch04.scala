@@ -2,7 +2,7 @@
 import org.apache.spark.mllib.linalg._
 import org.apache.spark.mllib.regression._
 
-val rawData = sc.textFile("data/covtype.data")
+val rawData = sc.textFile("data/covtype/covtype.data")
 
 val data = (rawData.map(_.split(",").toDouble)
 				   .map(values => LabeledPoint(values.last-1,Vectors.dense(values.init))))
@@ -31,4 +31,7 @@ val metrics = getMetrics(model, cvData)
 
 metrics.confusionMatrix
 println("precision is: " + metrics.precision)
+
+(0 until 7).map(cat => (cat, metrics.precision(cat), metrics.recall(cat))).foreach(println)
+
 
